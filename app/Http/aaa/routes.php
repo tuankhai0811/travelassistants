@@ -178,34 +178,6 @@ Route::post('Review/add/user', function(Request $request){
 	}
 });
 
-Route::post('Review/edit/user', function(Request $request){
-	$review = Review::where('email', $request->input("email"))
-						->where('id_place', $request->input("id_place"))
-						->first();
-	if ($review == null) {
-		return array('status' => "Err", 'result' => "", 'message' => "Không tồn tại!");
-	} else {
-		echo $review;
-		$review->rating = $request->input("rating");
-		$review->text = $request->input("text");
-		$review->time = $request->input("time");
-		$review->save();
-		return array('status' => "OK", 'result' => $review, 'message' => "");
-	}
-});
-
-Route::post('Review/delete/user', function(Request $request){
-	$review = Review::where('email', $request->input("email"))
-						->where('id_place', $request->input("id_place"))
-						->first();
-	if ($review == null) {
-		return array('status' => "Err", 'result' => "", 'message' => "Không tồn tại!");
-	} else {
-		$review->delete();
-		return array('status' => "OK", 'result' => [], 'message' => "Xóa thành công");
-	}
-});
-
 Route::post('Review/get/id', function(Request $request){
 	$result = Review::where('id_place', $request->input("id_place"))->get();
 	return array('status' => "OK", 'result' => $result, 'message' => "");
