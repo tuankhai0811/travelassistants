@@ -189,7 +189,7 @@ Route::post('Review/edit/user', function(Request $request){
 		$review->text = $request->input("text");
 		$review->time = $request->input("time");
 		$review->save();
-		return array('status' => "OK", 'result' => $review, 'message' => "");
+		return array('status' => "OK", 'result' => true, 'message' => "");
 	}
 });
 
@@ -201,7 +201,7 @@ Route::post('Review/delete/user', function(Request $request){
 		return array('status' => "Err", 'result' => "", 'message' => "Không tồn tại!");
 	} else {
 		$review->delete();
-		return array('status' => "OK", 'result' => [], 'message' => "Xóa thành công");
+		return array('status' => "OK", 'result' => true, 'message' => "Xóa thành công");
 	}
 });
 
