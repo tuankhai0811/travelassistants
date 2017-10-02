@@ -174,7 +174,7 @@ Route::post('Review/add/user', function(Request $request){
 		$result->text = $request->input("text");
 		$result->time = $request->input("time");
 		$result->save();
-		return array('status' => "OK", 'result' => $result, 'message' => "");
+		return array('status' => "OK", 'result' => true, 'message' => "");
 	}
 });
 
@@ -185,7 +185,6 @@ Route::post('Review/edit/user', function(Request $request){
 	if ($review == null) {
 		return array('status' => "Err", 'result' => "", 'message' => "Không tồn tại!");
 	} else {
-		echo $review;
 		$review->rating = $request->input("rating");
 		$review->text = $request->input("text");
 		$review->time = $request->input("time");
