@@ -62,7 +62,7 @@ Route::post('Place/find/province', function(Request $request){
 Route::post('User/add/new', function(Request $request){
 	$count = User::where('email', $request->input("email"))->count();
 	if ($count > 0){
-		return array('status' => "Err", 'result' => "", 'message' => "User đã tồn tại!");
+		return array('status' => "Err", 'result' => array(), 'message' => "User đã tồn tại!");
 	} else {
 		$user = new User;
 		$user->id = $request->input("id");
