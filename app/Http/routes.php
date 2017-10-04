@@ -59,18 +59,32 @@ Route::post('Place/find/province', function(Request $request){
 	return array('status' => "OK", 'result' => $result, 'message' => "");
 });
 
+Route::post('Place/find/query', function(Request $request){
+	$query = "%".$request->input('query')."%";
+	$places = Place::where('long_name', 'like', $query)
+					->orwhere('province_name', 'like', $query)
+					->get();
+	$provinces = null;
+	
+	return array('status' => "OK", 'result' => ['places' => $places], 'message' => "");
+});
+
 Route::post('User/add/new', function(Request $request){
 	$count = User::where('email', $request->input("email"))->count();
 	if ($count > 0){
 		return array('status' => "Err", 'result' => array(), 'message' => "User đã tồn tại!");
 	} else {
-		$user = new User;
-		$user->id = $request->input("id");
-		$user->name = $request->input("name");
-		$user->email = $request->input("email");
-		$user->profile_photo_url = $request->input("profile_photo_url");
-		$user->save();
-		return array('status' => "OK", 'result' => response($user, 201), 'message' => "");
+		try {
+			$user = new User;
+			$user->id = $request->input("id");
+			$user->name = $request->input("name");
+			$user->email = $request->input("email");
+			$user->profile_photo_url = $request->input("profile_photo_url");
+			$user->save();
+			return array('status' => "OK", 'result' => response($user, 201), 'message' => "");
+		} catch (Exception $e) {
+			return array('status' => "ERROR", 'result' => array(), 'message' => "");
+		}
 	}
 });
 
