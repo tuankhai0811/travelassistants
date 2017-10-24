@@ -20,6 +20,7 @@ use App\Favorite;
 use App\User;
 use App\Review;
 use App\Schedule;
+use App\SchedulePlace;
 
 Route::get('/', 'WelcomeController@index');
 
@@ -330,7 +331,10 @@ Route::post('Schedule/edit/new', function(Request $request){
 });
 
 Route::post('Schedule/get/email', function(Request $request){
-	$array = Schedule::where('email', $request->input("email"))->get();
+	$array = Schedule::where('email', $request->input("email"))->get()->toArray();
+	foreach ($array as $item) { 
+		$item['place'] = SchedulePlace::where('id_schedule', $item['id'])->count();
+	}
 	return array('status' => "OK", 'result' => $array, 'message' => "");
 });
 
