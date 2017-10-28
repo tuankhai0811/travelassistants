@@ -302,23 +302,25 @@ Route::post('Schedule/edit/new', function(Request $request){
 			->first();
 
 	$flag = true;
+	$num = -1;
+	$start = $request->input('date_start');
+	$end = $request->input('date_end');
 	$array = Schedule::where('email', $request->input("email"))->get()->toArray();
 	foreach ($array as $item) {
-		if ($item['id'] === $request->input("id")) {
+		if ($item['id'] == $request->input("id")) {
 			continue;
 		}
-		$start = $request->input('date_start');
-		$end = $request->input('date_end');
 		if (($start > $item['date_start'] && $start < $item['date_end']) 
 			|| ($end > $item['date_start'] && $end < $item['date_end'])
 			|| ($start <= $item['date_start'] && $end >= $item['date_end'])){
 			$flag = false;
+			$num = $item['id'];
 			break;
 		}
 	};
 
 	if (!$flag) {
-		return array('status' => "ERROR", 'result' => array(), 'message' => "Đã tồn tại!");
+		return array('status' => "ERROR", 'result' => array(), 'message' => $num);
 	} else {
 		$schedule->name = $request->input("name");
 		$schedule->date_start = $request->input("date_start");
