@@ -376,6 +376,7 @@ Route::post('SchedulePlace/add/new', function(Request $request){
 		$schedulePlace = new SchedulePlace;
 		$schedulePlace->id_schedule = $request->input("id_schedule");
 		$schedulePlace->id_place = $request->input("id_place");
+		$schedulePlace->name = Place::where('id', $request->input("id_place"))->first()->long_name;
 		$schedulePlace->email = $request->input("email");
 		$schedulePlace->date_start = $request->input("date_start");
 		$schedulePlace->date_end = $request->input("date_end");
