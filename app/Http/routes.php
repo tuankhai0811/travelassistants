@@ -325,7 +325,7 @@ Route::post('Schedule/edit/new', function(Request $request){
 		$schedule->name = $request->input("name");
 		$schedule->date_start = $request->input("date_start");
 		$schedule->date_end = $request->input("date_end");
-		$schedule->length = (int)(($request->input("date_end") - $request->input("date_start") + 86400)/86400);
+		$schedule->length = (int)(($request->input("date_end") - $request->input("date_start") + 1)/86400);
 		$schedule->save();
 		//$result = Place::where('id', $favorite->idPlace)->get();
 		return array('status' => "OK", 'result' => $schedule, 'message' => "");
@@ -343,5 +343,129 @@ Route::post('Schedule/get/email', function(Request $request){
 Route::post('Schedule/get/id', function(Request $request){
 	$array = Schedule::where('email', $request->input("email"))
 					->where('id', $request->input("id"))->get();
+	return array('status' => "OK", 'result' => $array, 'message' => "");
+});
+
+Route::post('SchedulePlace/add/new', function(Request $request){
+	$schedule = Schedule::where('id', $request->input('id_schedule'))->first();
+	$schedule_start = $schedule->date_start;
+	$schedule_end = $schedule->date_end;
+	$array = SchedulePlace::where('email', $request->input("email"))
+						->where('id_schedule', $request->input('id_schedule'))->get()->toArray();
+	$flag = true;
+
+	$start = $request->input('date_start');
+	$end = $request->input('date_end');
+	if ($start < $schedule_start || $end > $schedule_end || $start >= $end) {
+		$flag = false;
+	} else {
+		foreach ($array as $item) {
+			if (($start > $item['date_start'] && $start < $item['date_end']) 
+				|| ($end > $item['date_start'] && $end < $item['date_end'])
+				|| ($start <= $item['date_start'] && $end >= $item['date_end'])){
+				$flag = false;
+				break;
+			}
+		};
+	}
+	
+
+	if (!$flag) {
+		return array('status' => "ERROR", 'result' => array(), 'message' => "Đã tồn tại!");
+	} else {
+		$schedulePlace = new SchedulePlace;
+		$schedulePlace->id_schedule = $request->input("id_schedule");
+		$schedulePlace->id_place = $request->input("id_place");
+		$schedulePlace->email = $request->input("email");
+		$schedulePlace->date_start = $request->input("date_start");
+		$schedulePlace->date_end = $request->input("date_end");
+		$schedulePlace->description = $request->input("description");
+		$schedulePlace->length = (int)(($request->input("date_end") - $request->input("date_start") + 1)/86400);
+		$schedulePlace->save();
+		$schedule->place += 1;
+		$schedule->save();
+		//$result = Place::where('id', $favorite->idPlace)->get();
+		return array('status' => "OK", 'result' => $schedulePlace, 'message' => $flag);
+	}
+});
+
+
+Route::post('SchedulePlace/delete/id', function(Request $request){
+	$schedulePlace = SchedulePlace::where('email', $request->input("email"))
+						->where('id', $request->input("id"))
+						->first();
+	if ($schedulePlace == null) {
+		return array('status' => "ERROR", 'result' => array(), 'message' => "Không tồn tại!");
+	} else {
+		$schedulePlace->delete();
+		$schedule = Schedule::where('id', $schedulePlace->id_schedule)->first();
+		$schedule->place -= 1;
+		$schedule->save();
+		return array('status' => "OK", 'result' => array(), 'message' => "Xóa thành công");
+	}
+});
+
+Route::post('SchedulePlace/edit/new', function(Request $request){
+	$schedulePlace = SchedulePlace::where('id', $request->input('id'))->first();
+	$schedule = Schedule::where('id', $request->input('id_schedule'))->first();
+	$schedule_start = $schedule->date_start;
+	$schedule_end = $schedule->date_end;
+	$array = SchedulePlace::where('email', $request->input("email"))
+						->where('id_schedule', $request->input('id_schedule'))->get()->toArray();
+	$flag = true;
+
+	$start = $request->input('date_start');
+	$end = $request->input('date_end');
+	if ($start < $schedule_start || $end > $schedule_end || $start >= $end) {
+		$flag = false;
+	} else {
+		foreach ($array as $item) {
+			if ($item['id'] == $request->input("id")) {
+				continue;
+			}
+			if (($start > $item['date_start'] && $start < $item['date_end']) 
+				|| ($end > $item['date_start'] && $end < $item['date_end'])
+				|| ($start <= $item['date_start'] && $end >= $item['date_end'])){
+				$flag = false;
+				break;
+			}
+		};
+	}
+	
+
+	if (!$flag || $schedulePlace == null) {
+		return array('status' => "ERROR", 'result' => array(), 'message' => "Đã tồn tại!");
+	} else {
+		// $schedulePlace = new SchedulePlace;
+		// $schedulePlace->id_schedule = $request->input("id_schedule");
+		// $schedulePlace->id_place = $request->input("id_place");
+		// $schedulePlace->email = $request->input("email");
+		$schedulePlace->date_start = $request->input("date_start");
+		$schedulePlace->date_end = $request->input("date_end");
+		$schedulePlace->description = $request->input("description");
+		$schedulePlace->length = (int)(($request->input("date_end") - $request->input("date_start") + 1)/86400);
+		$schedulePlace->save();
+		// $schedule->place += 1;
+		// $schedule->save();
+		//$result = Place::where('id', $favorite->idPlace)->get();
+		return array('status' => "OK", 'result' => $schedulePlace, 'message' => $schedule_start);
+	}
+});
+
+Route::post('SchedulePlace/get/id_schedule', function(Request $request){
+	$array = SchedulePlace::where('email', $request->input("email"))
+						->where('id_schedule', $request->input('id_schedule'))->get()->toArray();
+	// foreach ($array as $item) { 
+	// 	$item['place'] = SchedulePlace::where('id_schedule', $item['id'])->count();
+	// }
+	return array('status' => "OK", 'result' => $array, 'message' => "");
+});
+
+Route::post('SchedulePlace/get/id', function(Request $request){
+	$array = SchedulePlace::where('email', $request->input("email"))
+					->where('id', $request->input("id"))->first();
+	if ($array == null) {
+		return array('status' => "OK", 'result' => null, 'message' => "Không tồn tại!");
+	}
 	return array('status' => "OK", 'result' => $array, 'message' => "");
 });
