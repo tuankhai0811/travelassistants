@@ -61,6 +61,14 @@ Route::post('Place/find/province', function(Request $request){
 	return array('status' => "OK", 'result' => $result, 'message' => "");
 });
 
+Route::post('Place/get/detail', function(Request $request){
+	$result = Place::where('id', $request->input("id"))->first();
+	if ($result == null) {
+		return array('status' => "ERROR", 'result' => null, 'message' => "");
+	}
+	return array('status' => "OK", 'result' => $result, 'message' => "");
+});
+
 Route::post('Place/find/query', function(Request $request){
 	$query = "%".$request->input('query')."%";
 	$places = Place::where('long_name', 'like', $query)
