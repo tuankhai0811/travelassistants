@@ -21,6 +21,7 @@ use App\User;
 use App\Review;
 use App\Schedule;
 use App\SchedulePlace;
+use App\ScheduleDay;
 
 Route::get('/', 'WelcomeController@index');
 
@@ -477,4 +478,47 @@ Route::post('SchedulePlace/get/id', function(Request $request){
 		return array('status' => "OK", 'result' => null, 'message' => "Không tồn tại!");
 	}
 	return array('status' => "OK", 'result' => $array, 'message' => "");
+});
+
+Route::post('ScheduleDay/add/new', function(Request $request){
+	$schedule = ScheduleDay::where('email', $request->input('email'))
+							->where('id_schedule', $request->input('id_schedule'))
+							->where('id_schedule_place', $request->input('id_schedule_place'))
+							->where('place_id', $request->input('place_id'))
+							->where('type', $request->input('type'))->first();
+	if ($schedule!=null) {
+		return array('status' => "ERROR", 'result' => array(), 'message' => "Đã tồn tại!");
+	} else {
+		$scheduleDay = new ScheduleDay;
+		$scheduleDay->id_schedule = $request->input("id_schedule");
+		$scheduleDay->id_schedule_place = $request->input("id_schedule_place");
+		$scheduleDay->place_id = $request->input("place_id");
+		$scheduleDay->email = $request->input("email");
+		$scheduleDay->type = $request->input("type");
+		$scheduleDay->save();
+		return array('status' => "OK", 'result' => $scheduleDay, 'message' => "");
+	}
+});
+
+Route::post('ScheduleDay/get/schedule_place', function(Request $request){
+	$array = ScheduleDay::where('email', $request->input('email'))
+							->where('id_schedule', $request->input('id_schedule'))
+							->where('id_schedule_place', $request->input('id_schedule_place'))
+							->where('type', $request->input('type'))
+							->get();
+	return array('status' => "OK", 'result' => $array, 'message' => "");
+});
+
+Route::post('ScheduleDay/delete/id', function(Request $request){
+	$scheduleDay = ScheduleDay::where('email', $request->input('email'))
+							->where('id_schedule', $request->input('id_schedule'))
+							->where('id_schedule_place', $request->input('id_schedule_place'))
+							->where('place_id', $request->input('place_id'))
+							->where('type', $request->input('type'))->first();
+	if ($scheduleDay == null) {
+		return array('status' => "ERROR", 'result' => array(), 'message' => "Không tồn tại!");
+	} else {
+		$scheduleDay->delete();
+		return array('status' => "OK", 'result' => array(), 'message' => "Xóa thành công");
+	}
 });
