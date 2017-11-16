@@ -487,7 +487,7 @@ Route::post('ScheduleDay/add/new', function(Request $request){
 							->where('place_id', $request->input('place_id'))
 							->where('type', $request->input('type'))->first();
 	if ($schedule!=null) {
-		return array('status' => "ERROR", 'result' => array(), 'message' => "Đã tồn tại!");
+		return array('status' => "ERROR", 'result' => null, 'message' => "Đã tồn tại!");
 	} else {
 		$scheduleDay = new ScheduleDay;
 		$scheduleDay->id_schedule = $request->input("id_schedule");
