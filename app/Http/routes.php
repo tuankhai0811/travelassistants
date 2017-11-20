@@ -301,6 +301,8 @@ Route::post('Schedule/delete/id', function(Request $request){
 		return array('status' => "ERROR", 'result' => array(), 'message' => "Không tồn tại!");
 	} else {
 		$schedule->delete();
+		SchedulePlace::where('id_schedule', $request->input('id'))->delete();
+		ScheduleDay::where('id_schedule', $request->input('id'))->delete();
 		return array('status' => "OK", 'result' => array(), 'message' => "Xóa thành công");
 	}
 });
@@ -411,6 +413,7 @@ Route::post('SchedulePlace/delete/id', function(Request $request){
 		$schedule = Schedule::where('id', $schedulePlace->id_schedule)->first();
 		$schedule->place -= 1;
 		$schedule->save();
+		$array = ScheduleDay::where('id_schedule_place', $request->input("id"))->delete();
 		return array('status' => "OK", 'result' => array(), 'message' => "Xóa thành công");
 	}
 });
